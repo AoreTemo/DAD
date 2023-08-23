@@ -1,11 +1,14 @@
-﻿namespace Core.Models;
+﻿using Core.Enums;
+using Microsoft.AspNetCore.Identity;
 
-public class AppUser : BaseEntity
+namespace Core.Models;
+
+public class AppUser : IdentityUser
 {
-    public string UserName { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public int Role { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public Role Role { get; set; }
+    
+    public List<AppUser>? Friends { get; set; }
+    public List<Notification>? Notifications { get; set; } 
 }
