@@ -1,6 +1,6 @@
 ﻿namespace DADProject.Models
 {
-    public class AppUser
+    public class AppUser : BaseEntity
     {
     }
 }
