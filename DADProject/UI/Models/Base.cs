@@ -1,4 +1,4 @@
-namespace DADProject.Models;
+namespace UI.Models;
 
 public class BaseEntity
 {
