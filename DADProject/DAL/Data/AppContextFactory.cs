@@ -5,18 +5,27 @@ using Microsoft.Extensions.Configuration;
 
 namespace DAL.Data
 {
-    internal class AppContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+    public class AppContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
         public ApplicationDbContext CreateDbContext(string[] args)
         {
-            throw new NotImplementedException();
+            var optionsBuilder = GetDbContextOptionsBuilder();
+
+            return new ApplicationDbContext(optionsBuilder.Options);
         }
 
-        private DbContextOptionsBuilder<ApplicationDbContext> GetDbContextOptionBuilder()
+        private DbContextOptionsBuilder<ApplicationDbContext> GetDbContextOptionsBuilder()
         {
             var builder = new ConfigurationBuilder();
             builder.SetBasePath(Directory.GetCurrentDirectory());
+            builder.AddJsonFile("appsettings.json");
+            var config = builder.Build();
+            string connectionString = config.GetConnectionString("DefaultConnection");
 
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            optionsBuilder.UseSqlServer(connectionString);
+
+            return optionsBuilder;
         }
 
     }

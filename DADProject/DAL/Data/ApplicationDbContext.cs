@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DAL.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -17,7 +18,7 @@ namespace DAL.Data
         }
 
         #region DbSets
-        DbSet<AppUser> Users { get; set; } = null!;
+        DbSet<AppUser> AppUsers { get; set; } = null!;
         DbSet <Comment> Comments { get; set; } = null!;
         DbSet<Post> Posts { get; set; } = null!;
         DbSet<Notification> Notifications { get; set; } = null!;
