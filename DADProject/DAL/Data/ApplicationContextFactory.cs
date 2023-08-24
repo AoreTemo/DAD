@@ -20,7 +20,7 @@ public class ApplicationContextFactory : IDesignTimeDbContextFactory<Application
             .SetBasePath(Directory.GetCurrentDirectory());
         const string fileName = "appsettings.json";
 
-        builder.AddJsonFile(Path.Combine((AppDomain.CurrentDomain.BaseDirectory, fileName).ToString()));
+        builder.AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName));
 
         var config = builder.Build();
         var connectionString = config.GetConnectionString("DefaultConnection");

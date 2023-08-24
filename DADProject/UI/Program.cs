@@ -1,7 +1,18 @@
+using Core.Models;
+using DAL.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddScoped<UserManager<AppUser>>();
+
+builder.Services.AddIdentity<AppUser, IdentityRole>().AddDefaultTokenProviders().AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>().AddSignInManager<SignInManager<AppUser>>();
 
 var app = builder.Build();
 
