@@ -150,8 +150,7 @@ public class Repository<T> : IRepository<T> where T : class
        try
        {
            Log.Information($"Deleting all entities from table {typeof(T).Name}");
-           foreach (var entity in _table)
-               _table.Remove(entity);
+           _table.RemoveRange(_table);
 
            await _context.SaveChangesAsync();
 
