@@ -1,10 +1,17 @@
 using Core.Models;
+using DAL.Abstractions.Repository;
 using DAL.Data;
+using DAL.Repository;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddScoped<UnitOfWork>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
