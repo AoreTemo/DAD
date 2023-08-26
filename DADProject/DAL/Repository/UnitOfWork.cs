@@ -5,13 +5,13 @@ namespace DAL.Repository;
 
 public class UnitOfWork : IDisposable
 {
-    private ApplicationDbContext     _context;
-    private Repository<AppUser>      _appUserRepository;
-    private Repository<Comment>      _commentRepository;
-    private Repository<Media>        _mediaRepository;
-    private Repository<Message>      _messageRepository;
-    private Repository<Notification> _notificaionRepository;
-    private Repository<Post>         _postRepository;
+    private ApplicationDbContext _context;
+    private Repository<AppUser> _appUserRepository;
+    private Repository<Comment> _commentRepository;
+    private Repository<Media> _mediaRepository;
+    private Repository<Message> _messageRepository;
+    private Repository<Notification> _notificationRepository;
+    private Repository<Post> _postRepository;
     private bool _disposed = false;
 
     public UnitOfWork(ApplicationDbContext context)
@@ -71,16 +71,16 @@ public class UnitOfWork : IDisposable
         }
     }
 
-    public Repository<Notification> NotificaionRepository
+    public Repository<Notification> NotificationRepository
     {
         get
         {
-            if (_notificaionRepository == null)
+            if (_notificationRepository == null)
             {
-                _notificaionRepository = new Repository<Notification>(_context);
+                _notificationRepository = new Repository<Notification>(_context);
             } 
             
-            return _notificaionRepository;
+            return _notificationRepository;
         }
     }
 
