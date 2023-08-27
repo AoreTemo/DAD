@@ -16,15 +16,12 @@ namespace DAL.Data
         {
 
         }
-
-        #region DbSets
+        
         DbSet<AppUser> AppUsers { get; set; } = null!;
-        DbSet <Comment> Comments { get; set; } = null!;
+        DbSet<Comment> Comments { get; set; } = null!;
         DbSet<Post> Posts { get; set; } = null!;
         DbSet<Notification> Notifications { get; set; } = null!;
         DbSet<Message> Messages { get; set; } = null!;
         DbSet<Media> Medias { get; set; } = null!;
-        #endregion
-
     }
 }
