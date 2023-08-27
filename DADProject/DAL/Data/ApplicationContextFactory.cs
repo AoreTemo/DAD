@@ -16,17 +16,14 @@ public class ApplicationContextFactory : IDesignTimeDbContextFactory<Application
 
     private DbContextOptionsBuilder<ApplicationDbContext> GetDbContextOptionsBuilder()
     {
-        var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory());
+        var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory());
         const string fileName = "appsettings.json";
 
         builder.AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName));
 
         var config = builder.Build();
         var connectionString = config.GetConnectionString("DefaultConnection");
-
-        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlServer(connectionString);
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>().UseSqlServer(connectionString);
 
         return optionsBuilder;
     }
