@@ -12,13 +12,11 @@ public class AccountController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
-    private readonly ApplicationDbContext _context;
     private readonly RoleManager<IdentityRole> _roleManager;
 
     public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
-        ApplicationDbContext context, RoleManager<IdentityRole> roleManager)
+       RoleManager<IdentityRole> roleManager)
     {
-        _context = context;
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
@@ -37,6 +35,8 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid)
         {
+            TempData["Error"] = $"Some properties in {nameof(loginViewModel)} is not valid";
+
             return View(loginViewModel);
         }
 
@@ -54,17 +54,19 @@ public class AccountController : Controller
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home"); 
+                    return RedirectToAction("Index", "Home");
                 }
             }
 
             //Wrong password
             TempData["Error"] = "Wrong credentials. Please, try again";
+
             return View(loginViewModel);
         }
 
         //User wasn't found
         TempData["Error"] = "Wrong credentials. Please, try again";
+
         return View(loginViewModel);
     }
 
@@ -80,6 +82,8 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid)
         {
+            TempData["Error"] = $"Some properties in {nameof(registerViewModel)} is not valid";
+
             return View(registerViewModel);
         }
 
@@ -116,11 +120,10 @@ public class AccountController : Controller
 
         if (!addToRoleResult.Succeeded)
         {
-            TempData["Error"] = $"Failed to add to Role: {Role.Admin.ToString()} {nameof(newUser)}";
+            TempData["Error"] = $"Failed to add to Role: {nameof(Role.Admin)} {nameof(newUser)}";
 
             return RedirectToAction("Index", "Home");
         }
-
 
         return RedirectToAction("Index", "Home");
     }
