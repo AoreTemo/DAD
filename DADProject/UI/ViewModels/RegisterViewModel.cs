@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace UI.ViewModels;
 
 public class RegisterViewModel
@@ -17,6 +18,7 @@ public class RegisterViewModel
 
     [Display(Name = "Email address")]
     [Required(ErrorMessage = "Email is required to fill")]
+    [DataType(DataType.EmailAddress)]
     public string EmailAddress { get; set; }
 
     [DataType(DataType.Password)]
@@ -28,6 +30,5 @@ public class RegisterViewModel
     [DataType(DataType.Password)]
     [Compare("Password", ErrorMessage ="Password don't match")]
     public string ConfirmPassword { get; set; }
-    //Role
 }
 
