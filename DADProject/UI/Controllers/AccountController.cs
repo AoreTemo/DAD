@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using UI.ViewModels;
 using DAL.Data;
 using Core.Enums;
+using Azure.Identity;
 
 namespace UI.Controllers;
 
@@ -25,7 +26,6 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> Login()
     {
-        await CreateAppUserRoles();
         var response = new LoginViewModel();
 
         return View(response);
@@ -48,7 +48,7 @@ public class AccountController : Controller
                 var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, false);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Race");
+                    return RedirectToAction("Index", "Race"); //Redirect
                 }
             }
             //Wrong password
@@ -59,18 +59,70 @@ public class AccountController : Controller
         TempData["Error"] = "Wrong credentials. Please, try again";
         return View(loginViewModel);
     }
-    private async Task CreateAppUserRoles()
+      private async Task CreateAppUserRoles()
+        {
+            if (!await _roleManager.RoleExistsAsync(Role.Admin.ToString()))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(Role.Admin.ToString()));
+            }
+
+            if (!await _roleManager.RoleExistsAsync(Role.User.ToString()))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(Role.User.ToString()));
+            }
+
+        }
+
+    public async Task<IActionResult> Register()
     {
-        if (!await _roleManager.RoleExistsAsync(Role.Admin.ToString()))
-        {
-            await _roleManager.CreateAsync(new IdentityRole(Role.Admin.ToString()));
-        }
+        var response = new RegisterViewModel();
 
-        if (!await _roleManager.RoleExistsAsync(Role.User.ToString()))
-        {
-            await _roleManager.CreateAsync(new IdentityRole(Role.User.ToString()));
-        }
-
+        return View(response);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
+    {
+        if (!ModelState.IsValid) 
+        { 
+            return View(registerViewModel); 
+        }
+
+        var user = await _userManager.FindByEmailAsync(registerViewModel.EmailAddress);
+
+        if (user != null)
+        {
+            TempData["Error"] = "This email adress is already in use";
+
+            return View(registerViewModel);
+        }
+
+        var newUser = new AppUser()
+        {
+            Email = registerViewModel.EmailAddress,
+            UserName = registerViewModel.Username,
+            FirstName = registerViewModel.FirstName,
+            LastName = registerViewModel.LastName
+        };
+
+        var newUserResponse = await _userManager.CreateAsync(newUser,registerViewModel.Password);
+
+        if (newUserResponse.Succeeded)
+        {
+            //Пока что оставляю админом
+            await _userManager.AddToRoleAsync(newUser, Role.Admin.ToString());
+        }
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+
+        return RedirectToAction("Index", "Home");
+    }
+
 }
 
