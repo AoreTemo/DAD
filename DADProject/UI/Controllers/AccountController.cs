@@ -15,7 +15,8 @@ public class AccountController : Controller
     private readonly ApplicationDbContext _context;
     private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ApplicationDbContext context, RoleManager<IdentityRole> roleManager)
+    public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
+        ApplicationDbContext context, RoleManager<IdentityRole> roleManager)
     {
         _context = context;
         _userManager = userManager;
@@ -46,32 +47,22 @@ public class AccountController : Controller
             {
                 //Password is corrent and we sign in
                 var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, false);
+
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Race"); //Redirect
+                    return RedirectToAction("Index", "Home"); //Redirect
                 }
             }
+
             //Wrong password
             TempData["Error"] = "Wrong credentials. Please, try again";
             return View(loginViewModel);
         }
+
         //User wasn't found
         TempData["Error"] = "Wrong credentials. Please, try again";
         return View(loginViewModel);
     }
-      private async Task CreateAppUserRoles()
-        {
-            if (!await _roleManager.RoleExistsAsync(Role.Admin.ToString()))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(Role.Admin.ToString()));
-            }
-
-            if (!await _roleManager.RoleExistsAsync(Role.User.ToString()))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(Role.User.ToString()));
-            }
-
-        }
 
     public async Task<IActionResult> Register()
     {
@@ -83,9 +74,9 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
     {
-        if (!ModelState.IsValid) 
-        { 
-            return View(registerViewModel); 
+        if (!ModelState.IsValid)
+        {
+            return View(registerViewModel);
         }
 
         var user = await _userManager.FindByEmailAsync(registerViewModel.EmailAddress);
@@ -105,13 +96,27 @@ public class AccountController : Controller
             LastName = registerViewModel.LastName
         };
 
-        var newUserResponse = await _userManager.CreateAsync(newUser,registerViewModel.Password);
+        var newUserResponse = await _userManager.CreateAsync(newUser, registerViewModel.Password);
 
-        if (newUserResponse.Succeeded)
+        if (!newUserResponse.Succeeded)
         {
-            //Пока что оставляю админом
-            await _userManager.AddToRoleAsync(newUser, Role.Admin.ToString());
+            TempData["Error"] = $"Failed to create {nameof(newUser)}";
+
+            return RedirectToAction("Index", "Home");
         }
+
+        await CreateAppUserRoles();
+
+        var addToRoleResult = await _userManager.AddToRoleAsync(newUser, Role.Admin.ToString());
+
+        if (!addToRoleResult.Succeeded)
+        {
+            TempData["Error"] = $"Failed to add to Role: {Role.Admin.ToString()} {nameof(newUser)}";
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        //Пока что оставляю админом
 
         return RedirectToAction("Index", "Home");
     }
@@ -124,5 +129,16 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-}
+    private async Task CreateAppUserRoles()
+    {
+        if (!await _roleManager.RoleExistsAsync(Role.Admin.ToString()))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(Role.Admin.ToString()));
+        }
 
+        if (!await _roleManager.RoleExistsAsync(Role.User.ToString()))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(Role.User.ToString()));
+        }
+    }
+}
