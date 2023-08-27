@@ -35,7 +35,10 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel loginViewModel)
     {
-        if (!ModelState.IsValid) return View(loginViewModel);
+        if (!ModelState.IsValid)
+        {
+            return View(loginViewModel);
+        }
 
         var user = await _userManager.FindByEmailAsync(loginViewModel.EmailAddress);
 
@@ -43,6 +46,7 @@ public class AccountController : Controller
         {
             //User is found and we check password
             var passwordCheck = await _userManager.CheckPasswordAsync(user, loginViewModel.Password);
+
             if (passwordCheck)
             {
                 //Password is corrent and we sign in
@@ -50,7 +54,7 @@ public class AccountController : Controller
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home"); //Redirect
+                    return RedirectToAction("Index", "Home"); 
                 }
             }
 
@@ -107,6 +111,7 @@ public class AccountController : Controller
 
         await CreateAppUserRoles();
 
+        //Пока что оставляю админом
         var addToRoleResult = await _userManager.AddToRoleAsync(newUser, Role.Admin.ToString());
 
         if (!addToRoleResult.Succeeded)
@@ -116,12 +121,11 @@ public class AccountController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        //Пока что оставляю админом
 
         return RedirectToAction("Index", "Home");
     }
 
-    [HttpPost]
+    [HttpGet]
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();

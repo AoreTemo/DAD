@@ -6,8 +6,9 @@ namespace UI.ViewModels;
     public class LoginViewModel
     {
         [Display(Name = "Email address")]
-        [Required(ErrorMessage = "Email adress field is required for filling")]    
+        [Required(ErrorMessage = "Email adress field is required for filling")]
         public string EmailAddress { get; set; }
+
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
